@@ -103,6 +103,10 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.webkit.JsResult;
+
 /**
  * Manages instances of {@link WebView}
  * <p>
@@ -893,6 +897,41 @@ public class RNCWebViewManager extends SimpleViewManager<WebView> {
         @Override
         public Bitmap getDefaultVideoPoster() {
           return Bitmap.createBitmap(50, 50, Bitmap.Config.ARGB_8888);
+        }
+        
+        @Override
+        public boolean onJsAlert(WebView view, String url, String message, final JsResult result) {
+          new AlertDialog.Builder(reactContext)
+            .setTitle("")
+            .setMessage(message)
+            .setPositiveButton(android.R.string.ok, new AlertDialog.OnClickListener() {
+              @Override
+              public void onClick(DialogInterface dialog, int which) {
+                result.confirm();
+              }
+            }).setCancelable(false).create().show();
+          return true;
+        }
+
+        @Override
+        public boolean onJsConfirm(WebView view, String url, String message, final android.webkit.JsResult result) {
+          new AlertDialog.Builder(reactContext)
+            .setTitle("")
+            .setMessage(message)
+            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+              public void onClick(DialogInterface dialog, int which) {
+                result.confirm();
+              }
+            })
+            .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+              public void onClick(DialogInterface dialog, int which) {
+                result.cancel();
+              }
+            })
+            .create()
+            .show();
+
+          return true;
         }
       };
 
